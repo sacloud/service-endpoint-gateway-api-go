@@ -11,4 +11,12 @@
 ## 概要
 sacloud/service-endpoint-gateway-api-goはさくらのクラウド サービスエンドポイントゲートウェイ APIをGo言語から利用するためのAPIライブラリです。
 
+Note: このライブラリはサービスエンドポイントゲートウェイ関連のAPIのみを扱います。サーバおよびスイッチの作成や操作はサポートしていないため必要に応じて [sacloud/iaas-api-go](https://github.com/sacloud/iaas-api-go)と組み合わせてご利用ください。
+
 ## 利用イメージ
+利用例: [example_test.go](./example_test.go)
+:warning:  v1.0に達するまでは互換性のない形で変更される可能性がありますのでご注意ください。
+
+# Licence
+`service-endpoint-gateway-api-go` Copyright (C) 2022-2026 The sacloud/service-endpoint-gateway-api-go authors.
+This project is published under [Apache 2.0 License](LICENSE).
