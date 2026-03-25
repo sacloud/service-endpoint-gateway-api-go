@@ -44,14 +44,20 @@ func constructAPISetup(t *testing.T) (ctx context.Context, api seg.ConstructAPI)
 func TestConstructOpFULL(t *testing.T) {
 	testutil.PreCheckEnvsFunc("SAKURA_ACCESS_TOKEN", "SAKURA_ACCESS_TOKEN_SECRET")(t)
 	ctx, constructAPI := constructAPISetup(t)
-	id := ""
+
+	// prepare for create (by iaas API)
 	switchID := os.Getenv("SAKURA_SEG_SWITCH_ID")
+	serverIPAddress := os.Getenv("SAKURA_SEG_SERVER_IP")
+
+	//netmask length for construct instance, should be between 1 and 32
 	networkMaskLen, err := strconv.ParseInt(os.Getenv("SAKURA_SEG_NETMASK_LEN"), 10, 32)
 	int32NetworkMaskLen := int32(networkMaskLen)
 	if err != nil {
 		t.Fatalf("invalid SAKURA_SEG_NETMASK_LEN(valid:1-32): %v", err)
 	}
-	serverIPAddress := os.Getenv("SAKURA_SEG_SERVER_IP")
+
+	//create seg instance id for control and cleanup in defer
+	id := ""
 
 	result := t.Run("Create", func(t *testing.T) {
 		request := v1.ModelsApplianceApplianceCreateRequest{
