@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package service_endpoint_gateway_test
+package seg_test
 
 import (
 	"testing"
 
 	"github.com/sacloud/saclient-go"
-	serviceEndpointGateway "github.com/sacloud/service-endpoint-gateway-api-go"
+	seg "github.com/sacloud/service-endpoint-gateway-api-go"
 	"github.com/stretchr/testify/require"
 )
 
@@ -26,7 +26,7 @@ func TestNewClient(t *testing.T) {
 	assert := require.New(t)
 
 	var theClient saclient.Client
-	actual, err := serviceEndpointGateway.NewClient(&theClient)
+	actual, err := seg.NewClient(&theClient)
 	assert.NoError(err)
 	assert.NotNil(actual)
 }

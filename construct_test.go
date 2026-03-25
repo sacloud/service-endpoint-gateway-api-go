@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package service_endpoint_gateway_test
+package seg_test
 
 import (
 	"context"
@@ -23,20 +23,20 @@ import (
 
 	"github.com/sacloud/packages-go/testutil"
 	"github.com/sacloud/saclient-go"
-	service_endpoint_gateway "github.com/sacloud/service-endpoint-gateway-api-go"
+	seg "github.com/sacloud/service-endpoint-gateway-api-go"
 	v1 "github.com/sacloud/service-endpoint-gateway-api-go/apis/v1"
 	seg_testutil "github.com/sacloud/service-endpoint-gateway-api-go/testutil"
 )
 
-func constructAPISetup(t *testing.T) (ctx context.Context, api service_endpoint_gateway.ConstructAPI) {
+func constructAPISetup(t *testing.T) (ctx context.Context, api seg.ConstructAPI) {
 	ctx = t.Context()
 	var saClient saclient.Client
 
-	client, err := service_endpoint_gateway.NewClient(&saClient)
+	client, err := seg.NewClient(&saClient)
 	if err != nil {
 		t.Fatalf("failed to create client: %v", err)
 	}
-	api = service_endpoint_gateway.NewConstructOp(client)
+	api = seg.NewConstructOp(client)
 
 	return ctx, api
 }
@@ -210,7 +210,7 @@ func TestConstructOpFULL(t *testing.T) {
 	})
 }
 
-func deleteConstruct(t *testing.T, ctx context.Context, api service_endpoint_gateway.ConstructAPI, id string) error {
+func deleteConstruct(t *testing.T, ctx context.Context, api seg.ConstructAPI, id string) error {
 	_, powerAPI := powerAPISetup(t)
 	err := powerAPI.Delete(ctx, id)
 	if err != nil {
@@ -231,7 +231,7 @@ func deleteConstruct(t *testing.T, ctx context.Context, api service_endpoint_gat
 	return api.Delete(ctx, id)
 }
 
-func checkInstanceStatus(ctx context.Context, api service_endpoint_gateway.ConstructAPI, id string,
+func checkInstanceStatus(ctx context.Context, api seg.ConstructAPI, id string,
 	status v1.ModelsInstanceInstanceStatus) (bool, error) {
 	resp, err := api.Read(ctx, id)
 	if err != nil {

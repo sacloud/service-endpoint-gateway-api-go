@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package service_endpoint_gateway_test
+package seg_test
 
 import (
 	"context"
@@ -21,19 +21,19 @@ import (
 
 	"github.com/sacloud/packages-go/testutil"
 	"github.com/sacloud/saclient-go"
-	service_endpoint_gateway "github.com/sacloud/service-endpoint-gateway-api-go"
+	seg "github.com/sacloud/service-endpoint-gateway-api-go"
 	v1 "github.com/sacloud/service-endpoint-gateway-api-go/apis/v1"
 )
 
-func powerAPISetup(t *testing.T) (ctx context.Context, api service_endpoint_gateway.PowerAPI) {
+func powerAPISetup(t *testing.T) (ctx context.Context, api seg.PowerAPI) {
 	ctx = t.Context()
 	var saClient saclient.Client
 
-	client, err := service_endpoint_gateway.NewClient(&saClient)
+	client, err := seg.NewClient(&saClient)
 	if err != nil {
 		t.Fatalf("failed to create client: %v", err)
 	}
-	api = service_endpoint_gateway.NewPowerOp(client)
+	api = seg.NewPowerOp(client)
 
 	return ctx, api
 }
