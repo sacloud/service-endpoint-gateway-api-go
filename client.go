@@ -27,7 +27,7 @@ const (
 func NewClient(client *saclient.Client) (*v1.Client, error) {
 	endpointConfig, err := client.EndpointConfig()
 	if err != nil {
-		return nil, NewError("unable to load message endpoint configuration", err)
+		return nil, NewError("unable to load service endpoint configuration", err)
 	}
 	endpoint := defaultAPIRootURL
 
