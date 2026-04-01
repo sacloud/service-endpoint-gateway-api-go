@@ -24,8 +24,8 @@ import (
 )
 
 const (
-	defRetryInterval = 15 * time.Second
-	defRetryTimeout  = 20 * time.Minute
+	defaultRetryInterval = 15 * time.Second
+	defaultRetryTimeout  = 20 * time.Minute
 )
 
 type ServiceEndpointGatewayAPI interface {
@@ -45,18 +45,22 @@ type ServiceEndpointGatewayAPI interface {
 var _ ServiceEndpointGatewayAPI = (*ServiceEndpointGatewayOp)(nil)
 
 type ServiceEndpointGatewayOp struct {
-	client   *v1.Client
-	retryCfg PowerRetryConfig
+	client        *v1.Client
+	powerRetryCfg PowerRetryConfig
 }
 
+// PowerRetryConfig is used for power control operations (PowerOn, Shutdown, Reset).
 type PowerRetryConfig struct {
 	Interval time.Duration
 	Timeout  time.Duration
 }
 
 func NewServiceEndpointGatewayOp(client *v1.Client) ServiceEndpointGatewayAPI {
-	cfg := defaultPowerRetryConfig()
-	return &ServiceEndpointGatewayOp{client: client, retryCfg: cfg}
+	return &ServiceEndpointGatewayOp{client: client}
+}
+
+func NewServiceEndpointGatewayOpWithPowerRetryConfig(client *v1.Client, powerRetryCfg PowerRetryConfig) ServiceEndpointGatewayAPI {
+	return &ServiceEndpointGatewayOp{client: client, powerRetryCfg: powerRetryCfg}
 }
 
 func (op *ServiceEndpointGatewayOp) List(ctx context.Context) (*v1.ModelsApplianceApplianceListResponseBody, error) {
@@ -160,7 +164,7 @@ func (op *ServiceEndpointGatewayOp) ReadPowerStatus(ctx context.Context, id stri
 
 func (op *ServiceEndpointGatewayOp) PowerOn(ctx context.Context, id string) (*v1.ModelsPowerApplianceUpdatePowerStatusResponseBody, error) {
 	var result *v1.ModelsPowerApplianceUpdatePowerStatusResponseBody
-	err := retryWithTimeout(ctx, op.retryCfg.Interval, op.retryCfg.Timeout, func() (bool, error) {
+	err := retryWithTimeout(ctx, op.powerRetryCfg.Interval, op.powerRetryCfg.Timeout, func() (bool, error) {
 		res, err := op.client.SegStatusUpdatePowerStatus(ctx, v1.SegStatusUpdatePowerStatusParams{ApplianceID: id})
 		if err != nil {
 			var e *v1.ModelsCommonDefaultErrorResponseBodyStatusCode
@@ -180,7 +184,7 @@ func (op *ServiceEndpointGatewayOp) PowerOn(ctx context.Context, id string) (*v1
 
 func (op *ServiceEndpointGatewayOp) Shutdown(ctx context.Context, id string) error {
 	request := v1.NewOptModelsPowerApplianceDeletePowerStatusRequest(v1.ModelsPowerApplianceDeletePowerStatusRequest{Force: true})
-	return retryWithTimeout(ctx, op.retryCfg.Interval, op.retryCfg.Timeout, func() (bool, error) {
+	return retryWithTimeout(ctx, op.powerRetryCfg.Interval, op.powerRetryCfg.Timeout, func() (bool, error) {
 		_, err := op.client.SegStatusDeletePowerStatus(ctx, request, v1.SegStatusDeletePowerStatusParams{ApplianceID: id})
 		if err != nil {
 			var e *v1.ModelsCommonDefaultErrorResponseBodyStatusCode
@@ -197,7 +201,7 @@ func (op *ServiceEndpointGatewayOp) Shutdown(ctx context.Context, id string) err
 }
 
 func (op *ServiceEndpointGatewayOp) Reset(ctx context.Context, id string) error {
-	return retryWithTimeout(ctx, op.retryCfg.Interval, op.retryCfg.Timeout, func() (bool, error) {
+	return retryWithTimeout(ctx, op.powerRetryCfg.Interval, op.powerRetryCfg.Timeout, func() (bool, error) {
 		_, err := op.client.SegStatusResetPowerStatus(ctx, v1.SegStatusResetPowerStatusParams{ApplianceID: id})
 		if err != nil {
 			var e *v1.ModelsCommonDefaultErrorResponseBodyStatusCode
@@ -213,15 +217,9 @@ func (op *ServiceEndpointGatewayOp) Reset(ctx context.Context, id string) error 
 	})
 }
 
-func defaultPowerRetryConfig() PowerRetryConfig {
-	return PowerRetryConfig{
-		Interval: defRetryInterval,
-		Timeout:  defRetryTimeout,
-	}
-}
-
 // retryWithTimeout is a helper to retry a function with timeout and interval.
 func retryWithTimeout(ctx context.Context, interval, timeout time.Duration, retryable func() (bool, error)) error {
+	interval, timeout = validateRetryParams(interval, timeout)
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	for {
@@ -239,4 +237,16 @@ func retryWithTimeout(ctx context.Context, interval, timeout time.Duration, retr
 		}
 		return err
 	}
+}
+
+// validateRetryParams ensures that the interval and timeout values are positive, applying defaults if necessary.
+func validateRetryParams(interval, timeout time.Duration) (time.Duration, time.Duration) {
+	// interval and timeout should be positive, if not set to default values
+	if interval <= 0 {
+		interval = defaultRetryInterval
+	}
+	if timeout <= 0 {
+		timeout = defaultRetryTimeout
+	}
+	return interval, timeout
 }
