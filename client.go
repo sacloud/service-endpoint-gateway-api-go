@@ -22,6 +22,9 @@ import (
 const (
 	defaultAPIRootURL = "https://secure.sakura.ad.jp/cloud/zone/is1a/api/cloud/1.1/"
 	serviceKey        = "service_endpoint_gateway"
+
+	// used zone info from saclient
+	defaultEndpoint = "https://secure.sakura.ad.jp/cloud/zone/"
 )
 
 func NewClient(client *saclient.Client) (*v1.Client, error) {
@@ -34,6 +37,11 @@ func NewClient(client *saclient.Client) (*v1.Client, error) {
 	if ep, ok := endpointConfig.Endpoints[serviceKey]; ok && ep != "" {
 		endpoint = ep
 	}
+
+	if endpointConfig.Zone != "" {
+		endpoint = defaultEndpoint + endpointConfig.Zone + "/api/cloud/1.1/"
+	}
+
 	return NewClientWithAPIRootURL(client, endpoint)
 }
 
