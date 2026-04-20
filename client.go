@@ -15,6 +15,9 @@
 package seg
 
 import (
+	"net/url"
+	"path"
+
 	"github.com/sacloud/saclient-go"
 	v1 "github.com/sacloud/service-endpoint-gateway-api-go/apis/v1"
 )
@@ -22,6 +25,9 @@ import (
 const (
 	defaultAPIRootURL = "https://secure.sakura.ad.jp/cloud/zone/is1a/api/cloud/1.1/"
 	serviceKey        = "service_endpoint_gateway"
+
+	// used zone info from saclient
+	defaultEndpoint = "https://secure.sakura.ad.jp/cloud/zone/"
 )
 
 func NewClient(client *saclient.Client) (*v1.Client, error) {
@@ -34,6 +40,18 @@ func NewClient(client *saclient.Client) (*v1.Client, error) {
 	if ep, ok := endpointConfig.Endpoints[serviceKey]; ok && ep != "" {
 		endpoint = ep
 	}
+
+	if endpointConfig.Zone != "" {
+		u, err := url.Parse(defaultEndpoint)
+		if err != nil {
+			return nil, NewError("invalid endpoint URL", err)
+		}
+		u.Path = path.Join(u.Path, endpointConfig.Zone, "api", "cloud", "1.1")
+		endpoint = u.String()
+		// Ensure the endpoint URL ends with a slash
+		endpoint += "/"
+	}
+
 	return NewClientWithAPIRootURL(client, endpoint)
 }
 
