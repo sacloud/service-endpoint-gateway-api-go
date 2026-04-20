@@ -2,7 +2,7 @@ module github.com/sacloud/service-endpoint-gateway-api-go
 
 go 1.25.0
 
-toolchain go1.25.8
+toolchain go1.25.9
 
 tool github.com/ogen-go/ogen/cmd/ogen
 
