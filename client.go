@@ -65,7 +65,6 @@ func NewClientWithAPIRootURL(clientAPI saclient.ClientAPI, apiRootURL string) (*
 
 	newcl, err := client.DupWith(saclient.WithBigInt(false),
 		saclient.WithMiddleware(modifyMiddleware()))
-
 	if err != nil {
 		return nil, err
 	}
