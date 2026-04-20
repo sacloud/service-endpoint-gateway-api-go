@@ -13,4 +13,4 @@
 // limitations under the License.
 package seg
 
-const Version = "0.1.1"
+const Version = "0.1.2"
