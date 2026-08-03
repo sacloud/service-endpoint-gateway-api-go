@@ -16,4 +16,4 @@
 // Please migrate to that module. This repository will be archived.
 package seg
 
-const Version = "0.2.0"
+const Version = "0.2.1"
