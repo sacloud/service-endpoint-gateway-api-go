@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.2.1](https://github.com/sacloud/service-endpoint-gateway-api-go/compare/v0.2.0...v0.2.1) - 2026-08-03
+- update README for repository transition by @shyouhei in https://github.com/sacloud/service-endpoint-gateway-api-go/pull/33
+
 ## [v0.2.0](https://github.com/sacloud/service-endpoint-gateway-api-go/compare/v0.1.2...v0.2.0) - 2026-07-07
 - ci: bump Songmu/tagpr from 1.9.0 to 1.18.2 by @dependabot[bot] in https://github.com/sacloud/service-endpoint-gateway-api-go/pull/17
 - go: bump github.com/sacloud/packages-go from 0.0.12 to 0.0.13 by @dependabot[bot] in https://github.com/sacloud/service-endpoint-gateway-api-go/pull/22
